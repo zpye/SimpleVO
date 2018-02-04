@@ -5,26 +5,30 @@
 #include "MapPoint.h"
 #include <vector>
 
-class Frame
+namespace SimpleVO
 {
-public:
-    Frame() {}
-    ~Frame() {}
 
-    Frame(Camera cam)
-        : camera(cam), isKeyFrame(false)
+    class Frame
     {
-    }
+    public:
+        Frame() {}
+        ~Frame() {}
 
-    void addPoint(Point2d p2d)
-    {
-        points.push_back(p2d);
-    }
+        Frame(Camera cam)
+            : camera(cam), isKeyFrame(false)
+        {
+        }
 
-public:
-    Camera camera;
-    std::vector<Point2d> points;
-    bool isKeyFrame;
-};
+        void addPoint(Point2d p2d)
+        {
+            points.push_back(p2d);
+        }
+
+    public:
+        Camera camera;
+        std::vector<Point2d> points;
+        bool isKeyFrame;
+    };
+}
 
 #endif // SIMPLEVO_FRAME_H

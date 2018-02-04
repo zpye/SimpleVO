@@ -9,25 +9,32 @@
 #include "MapPoint.h"
 #include "Frame.h"
 
-/*
-  core of visual odometry
-*/
-class VO
+namespace SimpleVO
 {
-public:
-    VO() {}
+    /*
+      core of visual odometry
+    */
+    class VO
+    {
+    public:
+        VO();
+        void Init(const cv::Mat& left, const cv::Mat& right);
+        void AddStereoImage(const cv::Mat& left, const cv::Mat& right);
 
-public:
-    Frame* lastFrame;
-    Frame* thisFrame;
+    public:
+        bool isInitialized;
 
-    cv::Mat lastLeftImg, lastRightImg;
-    cv::Mat thisLeftImg, thisRightImg;
+        Frame* lastFrame;
+        Frame* thisFrame;
 
-    std::unordered_map<unsigned int, Point3d> mapPoints;
-    std::unordered_map<unsigned int, Frame> keyFrames;
-    unsigned int mapPointsNum;
-    unsigned int keyFramesNum;
-};
+        cv::Mat lastLeftImg, lastRightImg;
+        cv::Mat thisLeftImg, thisRightImg;
+
+        std::unordered_map<unsigned int, Point3d> mapPoints;
+        std::unordered_map<unsigned int, Frame> keyFrames;
+        unsigned int mapPointsNum;
+        unsigned int keyFramesNum;
+    };
+}
 
 #endif // SIMPLEVO_VO_H
