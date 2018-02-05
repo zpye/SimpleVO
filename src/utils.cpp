@@ -11,6 +11,11 @@ namespace SimpleVO
         std::vector<bool>& success,
         std::vector<double>& disparity)
     {
+        if(!disparity.empty())
+        {
+            disparity.clear();
+        }
+
         // delete points not satisfy constraint
         for(unsigned int i = 0; i < success.size(); ++i)
         {

@@ -1,7 +1,6 @@
 #ifndef SIMPLEVO_FRAME_H
 #define SIMPLEVO_FRAME_H
 
-#include "Camera.h"
 #include "MapPoint.h"
 #include <vector>
 
@@ -11,11 +10,7 @@ namespace SimpleVO
     class Frame
     {
     public:
-        Frame() {}
-        ~Frame() {}
-
-        Frame(Camera cam)
-            : camera(cam), isKeyFrame(false)
+        Frame() : isKeyFrame(false)
         {
         }
 
@@ -25,7 +20,7 @@ namespace SimpleVO
         }
 
     public:
-        Camera camera;
+        Sophus::SE3d pose;
         std::vector<Point2d> points;
         bool isKeyFrame;
     };

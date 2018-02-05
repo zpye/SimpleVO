@@ -17,9 +17,13 @@ namespace SimpleVO
     class VO
     {
     public:
-        VO();
+        VO(double fx, double fy, double cx, double cy, double baseline);
         void Init(const cv::Mat& left, const cv::Mat& right);
         void AddStereoImage(const cv::Mat& left, const cv::Mat& right);
+        void Get3DPoint(const std::vector<cv::KeyPoint>& kp_left,
+            const std::vector<cv::KeyPoint>& kp_right,
+            std::vector<bool>& success,
+            std::vector<Point3d>& points3d);
 
     public:
         bool isInitialized;
@@ -30,10 +34,13 @@ namespace SimpleVO
         cv::Mat lastLeftImg, lastRightImg;
         cv::Mat thisLeftImg, thisRightImg;
 
-        std::unordered_map<unsigned int, Point3d> mapPoints;
-        std::unordered_map<unsigned int, Frame> keyFrames;
+        std::unordered_map<unsigned int, Point3d *> mapPoints;
+        std::unordered_map<unsigned int, Frame *> keyFrames;
         unsigned int mapPointsNum;
         unsigned int keyFramesNum;
+
+        double fx, fy, cx, cy;
+        double baseline;
     };
 }
 
