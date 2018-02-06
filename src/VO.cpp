@@ -1,5 +1,6 @@
 #include "VO.h"
 #include "OpticalFlow.h"
+#include "direct.h"
 #include "utils.hpp"
 
 using namespace std;
@@ -52,19 +53,19 @@ namespace SimpleVO
 
         // initialize frame
         // key points, using GFTT here.
-        vector<KeyPoint> kp1;
+        vector<KeyPoint> kp_left;
         Ptr<GFTTDetector> detector = GFTTDetector::create(500, 0.01, 20); // maximum 500 keypoints
-        detector->detect(thisLeftImg, kp1);
+        detector->detect(thisLeftImg, kp_left);
 
         // get corresponding points in the other image
-        vector<KeyPoint> kp2;
+        vector<KeyPoint> kp_right;
         vector<bool> success;
         OpticalFlowMultiLevel(thisLeftImg, thisRightImg,
-            kp1, kp2, success, true);
+            kp_left, kp_right, success, true);
 
         // get depth of key points
         vector<Point3d> points3d;
-        Get3DPoint(kp1, kp2, success, points3d);
+        Get3DPoint(kp_left, kp_right, success, points3d);
 
         // initial frame and map
         Frame* f = new Frame;
@@ -79,12 +80,15 @@ namespace SimpleVO
             p3d->observedKeyFramesNum += 1;
             
             // add 2d points to frame
-            f->addPoint(Point2d(kp1[i].pt.x, kp1[i].pt.y, mapPointsNum));
+            f->addPoint(kp_left[i], mapPointsNum);
 
             // add 3d points to map
+            f->isKeyFrame = true;
             mapPoints[mapPointsNum] = p3d;
             mapPointsNum += 1;
         }
+
+        thisFrame = f;
 
         // add frame to map
         // first frame is key frame
@@ -94,7 +98,7 @@ namespace SimpleVO
 
     void VO::AddStereoImage(const Mat& left, const Mat& right)
     {
-        // initialization
+        // initialization, first frame
         if(!isInitialized)
         {
             Init(left, right);
@@ -102,6 +106,60 @@ namespace SimpleVO
             return;
         }
 
+        // save last frame and images
+        lastFrame = thisFrame;
+        lastLeftImg = thisLeftImg;
+        lastRightImg = thisRightImg;
 
+        Frame* f = new Frame;
+        thisLeftImg = left;
+        thisRightImg = right;
+
+        // get depth for this frame
+        vector<KeyPoint>& kp_left = lastFrame->points;
+
+        // get corresponding points in the other image
+        vector<KeyPoint> kp_right;
+        vector<bool> success;
+        OpticalFlowMultiLevel(thisLeftImg, thisRightImg,
+            kp_left, kp_right, success, true);
+
+        // get depth of key points
+        vector<Point3d> points3d;
+        Get3DPoint(kp_left, kp_right, success, points3d);
+
+        vector<double> depth;
+        for(unsigned int i = 0; i < success.size(); ++i)
+        {
+            if(success[i])
+            {
+                depth.push_back(points3d[i].p(2));
+            }
+            else
+            {
+                depth.push_back(-1.0);
+            }
+        }
+
+        // direct method
+        VecVector2d px_ref, goodProjection;
+        vector<unsigned int> index;
+        ConvertKeyPointToEigen(kp_left, px_ref);
+        DirectPoseEstimationMultiLayer(lastLeftImg, thisLeftImg,
+            px_ref, depth, goodProjection, index, f->pose,
+            fx, fy, cx, cy);
+
+        // construct frame
+        f->pose = f->pose * lastFrame->pose;
+        vector<KeyPoint> goodKeyPoints;
+        ConvertEigenToKeyPoint(goodProjection, goodKeyPoints);
+        for(unsigned int i = 0; i < index.size(); ++i)
+        {
+            f->addPoint(goodKeyPoints[i], lastFrame->IDs[index[i]]);
+        }
+        thisFrame = f;
+
+        // condition for add KeyFrame
+        cout << index.size() << endl;
     }
 }

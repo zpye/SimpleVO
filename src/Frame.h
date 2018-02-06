@@ -2,6 +2,7 @@
 #define SIMPLEVO_FRAME_H
 
 #include "MapPoint.h"
+#include <opencv2/opencv.hpp>
 #include <vector>
 
 namespace SimpleVO
@@ -14,14 +15,16 @@ namespace SimpleVO
         {
         }
 
-        void addPoint(Point2d p2d)
+        void addPoint(cv::KeyPoint p, unsigned int id)
         {
-            points.push_back(p2d);
+            points.push_back(p);
+            IDs.push_back(id);
         }
 
     public:
         Sophus::SE3d pose;
-        std::vector<Point2d> points;
+        std::vector<cv::KeyPoint> points;
+        std::vector<unsigned int> IDs;
         bool isKeyFrame;
     };
 }

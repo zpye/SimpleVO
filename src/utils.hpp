@@ -28,37 +28,15 @@ namespace SimpleVO
             );
     }
 
-    void ConvertKeyPointToEigen(std::vector<cv::KeyPoint>& kp, VecVector2d& vec2d)
-    {
-        if(vec2d.size() > 0)
-        {
-            vec2d.clear();
-        }
+    void ConvertKeyPointToEigen(const std::vector<cv::KeyPoint>& kp, 
+        VecVector2d& vec2d);
 
-        for(unsigned int i = 0; i < kp.size(); ++i)
-        {
-            Eigen::Vector2d vec(kp[i].pt.x, kp[i].pt.y);
-            vec2d.push_back(vec);
-        }
-    }
-
-    void ConvertEigenToKeyPoint(VecVector2d& vec2d, std::vector<cv::KeyPoint>& kp)
-    {
-        if(kp.size() > 0)
-        {
-            kp.clear();
-        }
-
-        for(unsigned int i = 0; i < vec2d.size(); ++i)
-        {
-            cv::KeyPoint p(vec2d[i][0], vec2d[i][1], 1.0);
-            kp.push_back(p);
-        }
-    }
+    void ConvertEigenToKeyPoint(const VecVector2d& vec2d, 
+        std::vector<cv::KeyPoint>& kp);
 
     void ComputeDisparity(const std::vector<cv::KeyPoint>& kp1, 
         const std::vector<cv::KeyPoint>& kp2,
         std::vector<bool>& success,
-        std::vector<double>& depth);
+        std::vector<double>& disparity);
 }
 #endif // SIMPLEVO_UTILS_HPP

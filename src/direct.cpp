@@ -9,7 +9,9 @@ namespace SimpleVO
         const cv::Mat &img1,
         const cv::Mat &img2,
         const VecVector2d &px_ref,
-        const vector<double> depth_ref,
+        const vector<double>& depth_ref,
+        VecVector2d& goodProjection,
+        vector<unsigned int>& index,
         Sophus::SE3d &T21,
         double fx, double fy, double cx, double cy)
     {
@@ -20,17 +22,22 @@ namespace SimpleVO
 
         double cost = 0, lastCost = 0;
         int nGood = 0;  // good projections
-        VecVector2d goodProjection;
 
         for(int iter = 0; iter < iterations; iter++) {
             nGood = 0;
             goodProjection.clear();
+            index.clear();
 
             // Define Hessian and bias
             Matrix6d H = Matrix6d::Zero();  // 6x6 Hessian
             Vector6d b = Vector6d::Zero();  // 6x1 bias
 
             for(size_t i = 0; i < px_ref.size(); i++) {
+                if(depth_ref[i] < 0)
+                {
+                    // error match
+                    continue;
+                }
 
                 // compute the projection in the second image
                 Eigen::Vector2d p1 = px_ref[i];
@@ -54,6 +61,7 @@ namespace SimpleVO
 
                 nGood++;
                 goodProjection.push_back(Eigen::Vector2d(u, v));
+                index.push_back(i);
 
                 // and compute error and jacobian
                 for(int x = -half_patch_size; x < half_patch_size; x++)
@@ -124,14 +132,16 @@ namespace SimpleVO
         }
         cv::imshow("reference", img1_show);
         cv::imshow("current", img2_show);
-        cv::waitKey();
+        cv::waitKey(10);
     }
 
     void DirectPoseEstimationMultiLayer(
         const cv::Mat &img1,
         const cv::Mat &img2,
         const VecVector2d &px_ref,
-        const vector<double> depth_ref,
+        const vector<double>& depth_ref,
+        VecVector2d& goodProjection,
+        vector<unsigned int>& index,
         Sophus::SE3d &T21,
         double fx, double fy, double cx, double cy)
     {
@@ -143,7 +153,6 @@ namespace SimpleVO
 
         // create pyramids
         vector<cv::Mat> pyr1, pyr2; // image pyramids
-                                    // TODO START YOUR CODE HERE
         cv::Mat pyr_img1 = img1;
         cv::Mat pyr_img2 = img2;
         for(int i = 0; i < pyramids; ++i)
@@ -155,7 +164,6 @@ namespace SimpleVO
             cv::pyrDown(pyr_img1, pyr_img1, s1);
             cv::pyrDown(pyr_img2, pyr_img2, s2);
         }
-        // END YOUR CODE HERE
 
         double fxG = fx, fyG = fy, cxG = cx, cyG = cy;  // backup the old values
         for(int level = pyramids - 1; level >= 0; level--) {
@@ -164,14 +172,15 @@ namespace SimpleVO
                 px_ref_pyr.push_back(scales[level] * px);
             }
 
-            // TODO START YOUR CODE HERE
             // scale fx, fy, cx, cy in different pyramid levels
             fx = fxG * scales[level];
             fy = fyG * scales[level];
             cx = cxG * scales[level];
             cy = cyG * scales[level];
-            // END YOUR CODE HERE
-            DirectPoseEstimationSingleLayer(pyr1[level], pyr2[level], px_ref_pyr, depth_ref, T21);
+
+            DirectPoseEstimationSingleLayer(pyr1[level], pyr2[level],
+                px_ref_pyr, depth_ref, goodProjection, index, T21,
+                fx, fy, cx, cy);
         }
     }
 }

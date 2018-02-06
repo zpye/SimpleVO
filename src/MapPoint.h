@@ -6,23 +6,6 @@
 
 namespace SimpleVO
 {
-    class Point2d
-    {
-    public:
-        Point2d() {}
-        ~Point2d() {}
-
-        Point2d(double _x, double _y, unsigned int _id)
-            : p(_x, _y), id(_id)
-        {
-        }
-
-    public:
-        Eigen::Matrix<double, 2, 1> p;
-        Eigen::Matrix<double, 16, 1> color;
-        unsigned int id; // id of 3d point
-    };
-
     class Point3d
     {
     public:

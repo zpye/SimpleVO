@@ -27,7 +27,9 @@ namespace SimpleVO
         const cv::Mat &img1,
         const cv::Mat &img2,
         const VecVector2d &px_ref,
-        const std::vector<double> depth_ref,
+        const std::vector<double>& depth_ref,
+        VecVector2d& goodProjection,
+        std::vector<unsigned int>& index,
         Sophus::SE3d &T21,
         double fx, double fy, double cx, double cy
     );
@@ -44,7 +46,9 @@ namespace SimpleVO
         const cv::Mat &img1,
         const cv::Mat &img2,
         const VecVector2d &px_ref,
-        const std::vector<double> depth_ref,
+        const std::vector<double>& depth_ref,
+        VecVector2d& goodProjection,
+        std::vector<unsigned int>& index,
         Sophus::SE3d &T21,
         double fx, double fy, double cx, double cy
     );
