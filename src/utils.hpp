@@ -38,5 +38,8 @@ namespace SimpleVO
         const std::vector<cv::KeyPoint>& kp2,
         std::vector<bool>& success,
         std::vector<double>& disparity);
+
+    void RemoveDuplicateKeyPoints(const std::vector<cv::KeyPoint>& kp_in,
+        const std::vector<cv::KeyPoint>& kp_ref, std::vector<bool>& success);
 }
 #endif // SIMPLEVO_UTILS_HPP

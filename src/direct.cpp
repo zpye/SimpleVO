@@ -53,8 +53,14 @@ namespace SimpleVO
                 u = X * fx * invz + cx;
                 v = Y * fy * invz + cy;
 
-                if(u <= half_patch_size || u >= img2.cols - half_patch_size ||
-                    v <= half_patch_size || v >= img2.rows - half_patch_size) {
+                if(p1[0] <= half_patch_size + 1 || p1[0] >= img1.cols - half_patch_size - 1 ||
+                    p1[1] <= half_patch_size + 1 || p1[1] >= img1.rows - half_patch_size - 1) {
+                    // go outside
+                    continue;
+                }
+
+                if(u <= half_patch_size + 1 || u >= img2.cols - half_patch_size - 1 ||
+                    v <= half_patch_size + 1 || v >= img2.rows - half_patch_size - 1) {
                     // go outside
                     continue;
                 }
@@ -109,15 +115,16 @@ namespace SimpleVO
                 break;
             }
             if(iter > 0 && cost > lastCost) {
-                cout << "cost increased: " << cost << ", " << lastCost << endl;
+                //cout << "cost increased: " << cost << ", " << lastCost << endl;
                 break;
             }
             lastCost = cost;
-            cout << "cost = " << cost << ", good = " << nGood << endl;
+            //cout << "cost = " << cost << ", good = " << nGood << endl;
         }
-        cout << "good projection: " << nGood << endl;
-        cout << "T21 = \n" << T21.matrix() << endl;
+        //cout << "good projection: " << nGood << endl;
+        //cout << "T21 = \n" << T21.matrix() << endl;
 
+        /*
         // in order to help you debug, we plot the projected pixels here
         cv::Mat img1_show, img2_show;
         cv::cvtColor(img1, img1_show, CV_GRAY2BGR);
@@ -133,6 +140,7 @@ namespace SimpleVO
         cv::imshow("reference", img1_show);
         cv::imshow("current", img2_show);
         cv::waitKey(10);
+        */
     }
 
     void DirectPoseEstimationMultiLayer(
@@ -182,5 +190,15 @@ namespace SimpleVO
                 px_ref_pyr, depth_ref, goodProjection, index, T21,
                 fx, fy, cx, cy);
         }
+
+        // in order to help you debug, we plot the projected pixels here
+        cv::Mat img_show;
+        cv::cvtColor(img2, img_show, CV_GRAY2BGR);
+        for(auto &px : goodProjection) {
+            cv::rectangle(img_show, cv::Point2f(px[0] - 2, px[1] - 2), cv::Point2f(px[0] + 2, px[1] + 2),
+                cv::Scalar(0, 250, 0));
+        }
+        cv::imshow("current", img_show);
+        cv::waitKey(5);
     }
 }

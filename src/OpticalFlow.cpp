@@ -21,7 +21,7 @@ namespace SimpleVO
         bool have_initial = !kp2.empty();
 
         for(size_t i = 0; i < kp1.size(); i++) {
-            auto kp = kp1[i];
+            KeyPoint kp = kp1[i];
             double dx = 0, dy = 0; // dx,dy need to be estimated
             if(have_initial) {
                 dx = kp2[i].pt.x - kp.pt.x;
@@ -37,8 +37,8 @@ namespace SimpleVO
                 Eigen::Vector2d b = Eigen::Vector2d::Zero();
                 cost = 0;
 
-                if(kp.pt.x + dx <= half_patch_size || kp.pt.x + dx >= img1.cols - half_patch_size ||
-                    kp.pt.y + dy <= half_patch_size || kp.pt.y + dy >= img1.rows - half_patch_size) {   // go outside
+                if(kp.pt.x + dx <= half_patch_size + 1 || kp.pt.x + dx >= img1.cols - half_patch_size - 1 ||
+                    kp.pt.y + dy <= half_patch_size + 1 || kp.pt.y + dy >= img1.rows - half_patch_size - 1) {   // go outside
                     succ = false;
                     break;
                 }
@@ -81,7 +81,7 @@ namespace SimpleVO
                     break;
                 }
                 if(iter > 0 && cost > lastCost) {
-                    cout << "cost increased: " << cost << ", " << lastCost << endl;
+                    //cout << "cost increased: " << cost << ", " << lastCost << endl;
                     break;
                 }
 

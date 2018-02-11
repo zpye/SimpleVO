@@ -51,7 +51,7 @@ bool test(Sophus::SE3d const& T_w_targ, Sophus::SE3d const& T_w_init) {
 
   // Specify local update rule for our parameter
   problem.AddParameterBlock(T_wr.data(), Sophus::SE3d::num_parameters,
-                            new Sophus::test::LocalParameterizationSE3);
+                            new Sophus::LocalParameterizationSE3);
 
   // Create and add cost function. Derivatives will be evaluated via
   // automatic differentiation

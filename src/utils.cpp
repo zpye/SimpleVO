@@ -56,13 +56,37 @@ namespace SimpleVO
 
             // points on left image should have larger x than points on right image
             double disp = double(kp1[i].pt.x - kp2[i].pt.x);
-            if(disp < 0)
+            if(disp < 0.01 || disp > 50.0)
             {
                 success[i] = false;
                 disp = 0.0;
             }
 
             disparity.push_back(disp);
+        }
+    }
+
+    void RemoveDuplicateKeyPoints(const std::vector<cv::KeyPoint>& kp_in,
+        const std::vector<cv::KeyPoint>& kp_ref, std::vector<bool>& success)
+    {
+        for(unsigned int i = 0; i < success.size(); ++i)
+        {
+            if(!success[i])
+            {
+                continue;
+            }
+
+            for(unsigned int j = 0; j < kp_ref.size(); ++j)
+            {
+                double dist2 = (kp_in[i].pt.x - kp_ref[j].pt.x) * (kp_in[i].pt.x - kp_ref[j].pt.x)
+                    + (kp_in[i].pt.y - kp_ref[j].pt.y) * (kp_in[i].pt.y - kp_ref[j].pt.y);
+
+                if(dist2 <= 64.0)
+                {
+                    success[i] = false;
+                    break;
+                }
+            }
         }
     }
 }

@@ -23,16 +23,18 @@ int main(int argc, char** argv)
     SimpleVO::VO* myVO = new SimpleVO::VO(fx, fy, cx, cy, baseline);
 
     // add images
-    unsigned int ImageNum = 100;
+    unsigned int ImageNum = 1000;
     for(unsigned int i = 0; i < ImageNum; ++i)
     {
         Mat leftImg = imread((leftImages % i).str(), 0);
         Mat rightImg = imread((rightImages % i).str(), 0);
 
-        myVO->AddStereoImage(leftImg, rightImg);
+        myVO->AddStereoImage(leftImg, rightImg);    
+        
+        // print info
+        myVO->printStatus();
     }
-   
-    // get poses
 
+    cout << "END" << endl;
 	return 0;
 }

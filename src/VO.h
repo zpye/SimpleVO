@@ -24,6 +24,11 @@ namespace SimpleVO
             const std::vector<cv::KeyPoint>& kp_right,
             std::vector<bool>& success,
             std::vector<Point3d>& points3d);
+        void CreateFrameByStereoImage(const cv::Mat& left, const cv::Mat& right,
+            bool provideLeftKeyPoints, std::vector<cv::KeyPoint>& kp, 
+            std::vector<Point3d>& p3d, std::vector<bool>& success);
+        bool IsKeyFrame(const Frame* const f);
+        void printStatus();
 
     public:
         bool isInitialized;
@@ -33,6 +38,8 @@ namespace SimpleVO
 
         cv::Mat lastLeftImg, lastRightImg;
         cv::Mat thisLeftImg, thisRightImg;
+
+        unsigned int frameCounter;
 
         std::unordered_map<unsigned int, Point3d *> mapPoints;
         std::unordered_map<unsigned int, Frame *> keyFrames;

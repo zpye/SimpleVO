@@ -5,7 +5,6 @@
 #include <sophus/se3.hpp>
 
 namespace Sophus {
-namespace test {
 
 class LocalParameterizationSE3 : public ceres::LocalParameterization {
  public:
@@ -40,7 +39,7 @@ class LocalParameterizationSE3 : public ceres::LocalParameterization {
 
   virtual int LocalSize() const { return SE3d::DoF; }
 };
-}  // namespace test
+
 }  // namespace Sophus
 
 #endif // SOPHUS_LOCAL_PARAMETERIZATION_SE3_HPP
