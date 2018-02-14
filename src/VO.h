@@ -28,7 +28,8 @@ namespace SimpleVO
             bool provideLeftKeyPoints, std::vector<cv::KeyPoint>& kp, 
             std::vector<Point3d>& p3d, std::vector<bool>& success);
         bool IsKeyFrame(const Frame* const f);
-        void printStatus();
+        void PrintStatus();
+        void WriteToFile(std::ofstream& out);
 
     public:
         bool isInitialized;

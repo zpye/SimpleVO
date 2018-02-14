@@ -3,6 +3,7 @@
 
 #include <ceres/ceres.h>
 #include <sophus/se3.hpp>
+#include <unordered_map>
 
 namespace SimpleVO
 {

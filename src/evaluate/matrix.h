@@ -1,6 +1,7 @@
 /*
 Copyright 2011. All rights reserved.
-Institute of Measurement and Control Systems
+Institute of Measurement and Control 
+s
 Karlsruhe Institute of Technology, Germany
 
 This file is part of libviso2.

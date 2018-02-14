@@ -18,3 +18,5 @@ add_subdirectory(test test)
 if(NOT MSVC)
     add_subdirectory(evaluate evaluate)
 endif()
+
+add_subdirectory(evaluate evaluate)

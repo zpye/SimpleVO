@@ -229,9 +229,9 @@ namespace SimpleVO
 
             // use the nearest 5 key frames to optimize
             unsigned int lower_bound = 0;
-            if(keyFramesNum > 10)
+            if(keyFramesNum > 5)
             {
-                lower_bound = keyFramesNum - 10;
+                lower_bound = keyFramesNum - 5;
             }
             
             for(unsigned int i = lower_bound; i < keyFramesNum; ++i)
@@ -282,7 +282,7 @@ namespace SimpleVO
         thisFrame = f;
     }
 
-    void VO::printStatus()
+    void VO::PrintStatus()
     {
         // print status of current frame
         cout << "============================================" << endl;
@@ -290,5 +290,23 @@ namespace SimpleVO
         cout << "map points number: " << mapPointsNum << endl;
         cout << "key frames number: " << keyFramesNum << endl;
         cout << "current pose:\n" << thisFrame->pose.inverse().matrix() << endl;
+    }
+
+    void VO::WriteToFile(ofstream& out)
+    {
+        Eigen::Matrix<double, 3, 4> pose = thisFrame->pose.inverse().matrix3x4();
+        out << pose(0, 0) << " ";
+        out << pose(0, 1) << " ";
+        out << pose(0, 2) << " ";
+        out << pose(0, 3) << " ";
+        out << pose(1, 0) << " ";
+        out << pose(1, 1) << " ";
+        out << pose(1, 2) << " ";
+        out << pose(1, 3) << " ";
+        out << pose(2, 0) << " ";
+        out << pose(2, 1) << " ";
+        out << pose(2, 2) << " ";
+        out << pose(2, 3) << " ";
+        out << endl;
     }
 }

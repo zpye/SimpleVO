@@ -1,10 +1,11 @@
 #include <iostream>
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
-#include "mail.h"
 #include "matrix.h"
 
 using namespace std;
@@ -228,15 +229,20 @@ void plotPathPlot (string dir,vector<int32_t> &roi,int32_t idx) {
     
     // run gnuplot => create png + eps
     sprintf(command,"cd %s; gnuplot %s",dir.c_str(),file_name);
+    //sprintf(command, "gnuplot %s", (dir + "/" + file_name).c_str());
+    cout << "command: " << command << endl;
     system(command);
   }
   
   // create pdf and crop
   sprintf(command,"cd %s; ps2pdf %02d.eps %02d_large.pdf",dir.c_str(),idx,idx);
+  cout << "command: " << command << endl;
   system(command);
   sprintf(command,"cd %s; pdfcrop %02d_large.pdf %02d.pdf",dir.c_str(),idx,idx);
+  cout << "command: " << command << endl;
   system(command);
   sprintf(command,"cd %s; rm %02d_large.pdf",dir.c_str(),idx);
+  cout << "command: " << command << endl;
   system(command);
 }
 
@@ -370,15 +376,19 @@ void plotErrorPlots (string dir,char* prefix) {
       
       // run gnuplot => create png + eps
       sprintf(command,"cd %s; gnuplot %s",dir.c_str(),file_name);
+      cout << "command: " << command << endl;
       system(command);
     }
     
     // create pdf and crop
     sprintf(command,"cd %s; ps2pdf %s_%s.eps %s_%s_large.pdf",dir.c_str(),prefix,suffix,prefix,suffix);
+    cout << "command: " << command << endl;
     system(command);
     sprintf(command,"cd %s; pdfcrop %s_%s_large.pdf %s_%s.pdf",dir.c_str(),prefix,suffix,prefix,suffix);
+    cout << "command: " << command << endl;
     system(command);
     sprintf(command,"cd %s; rm %s_%s_large.pdf",dir.c_str(),prefix,suffix);
+    cout << "command: " << command << endl;
     system(command);
   }
 }
@@ -405,7 +415,7 @@ void saveStats (vector<errors> err,string dir) {
   fclose(fp);
 }
 
-bool eval (string result_sha,Mail* mail) {
+bool eval (string result_sha) {
 
   // ground truth and result directories
   string gt_dir         = "data/odometry/poses";
@@ -415,15 +425,15 @@ bool eval (string result_sha,Mail* mail) {
   string plot_error_dir = result_dir + "/plot_error";
 
   // create output directories
-  system(("mkdir " + error_dir).c_str());
-  system(("mkdir " + plot_path_dir).c_str());
-  system(("mkdir " + plot_error_dir).c_str());
+  //system(("mkdir " + error_dir).c_str());
+  //system(("mkdir " + plot_path_dir).c_str());
+  //system(("mkdir " + plot_error_dir).c_str());
   
   // total errors
   vector<errors> total_err;
 
   // for all sequences do
-  for (int32_t i=11; i<22; i++) {
+  for (int32_t i = 4; i <= 4; i++) {
    
     // file name
     char file_name[256];
@@ -434,13 +444,13 @@ bool eval (string result_sha,Mail* mail) {
     vector<Matrix> poses_result = loadPoses(result_dir + "/data/" + file_name);
    
     // plot status
-    mail->msg("Processing: %s, poses: %d/%d",file_name,poses_result.size(),poses_gt.size());
+    //mail->msg("Processing: %s, poses: %d/%d",file_name,poses_result.size(),poses_gt.size());
     
     // check for errors
-    if (poses_gt.size()==0 || poses_result.size()!=poses_gt.size()) {
-      mail->msg("ERROR: Couldn't read (all) poses of: %s", file_name);
-      return false;
-    }
+    //if (poses_gt.size()==0 || poses_result.size()!=poses_gt.size()) {
+    //  mail->msg("ERROR: Couldn't read (all) poses of: %s", file_name);
+    //  return false;
+    //}
 
     // compute sequence errors    
     vector<errors> seq_err = calcSequenceErrors(poses_gt,poses_result);
@@ -490,18 +500,17 @@ int32_t main (int32_t argc,char *argv[]) {
   string result_sha = argv[1];
 
   // init notification mail
-  Mail *mail;
-  if (argc==4) mail = new Mail(argv[3]);
-  else         mail = new Mail();
-  mail->msg("Thank you for participating in our evaluation!");
+  //Mail *mail;
+  //if (argc==4) mail = new Mail(argv[3]);
+  //else         mail = new Mail();
+  //mail->msg("Thank you for participating in our evaluation!");
 
   // run evaluation
-  bool success = eval(result_sha,mail);
-  if (argc==4) mail->finalize(success,"odometry",result_sha,argv[2]);
-  else         mail->finalize(success,"odometry",result_sha);
+  bool success = eval(result_sha);
+  //if (argc==4) mail->finalize(success,"odometry",result_sha,argv[2]);
+  //else         mail->finalize(success,"odometry",result_sha);
 
   // send mail and exit
-  delete mail;
+  //delete mail;
   return 0;
 }
-

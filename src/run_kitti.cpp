@@ -12,8 +12,15 @@ using namespace cv;
 
 int main(int argc, char** argv) 
 {
-	boost::format leftImages("E:/SLAM_class/project/SimpleVO/data/00/image_0/%06d.png");
-	boost::format rightImages("E:/SLAM_class/project/SimpleVO/data/00/image_1/%06d.png");
+	boost::format leftImages("E:/SLAM_class/project/SimpleVO/data/04/image_0/%06d.png");
+	boost::format rightImages("E:/SLAM_class/project/SimpleVO/data/04/image_1/%06d.png");
+
+    ofstream out("04.txt");
+    if(!out.is_open())
+    {
+        cerr << "open file error" << endl;
+        return 1;
+    }
 
     // initialize
     // Camera intrinsics
@@ -23,8 +30,8 @@ int main(int argc, char** argv)
     SimpleVO::VO* myVO = new SimpleVO::VO(fx, fy, cx, cy, baseline);
 
     // add images
-    unsigned int ImageNum = 1000;
-    for(unsigned int i = 0; i < ImageNum; ++i)
+    unsigned int ImageNum = 270;
+    for(unsigned int i = 0; i <= ImageNum; ++i)
     {
         Mat leftImg = imread((leftImages % i).str(), 0);
         Mat rightImg = imread((rightImages % i).str(), 0);
@@ -32,9 +39,13 @@ int main(int argc, char** argv)
         myVO->AddStereoImage(leftImg, rightImg);    
         
         // print info
-        myVO->printStatus();
+        myVO->PrintStatus();
+
+        // write to file
+        myVO->WriteToFile(out);
     }
 
+    out.close();
     cout << "END" << endl;
 	return 0;
 }
